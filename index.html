@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="zh-cn">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>DeepRM+ 使用深度增强学习提升服务器资源管理效率的研究</title>
+
+		<meta name="description" content="使用深度增强学习提升服务器资源管理效率的研究">
+		<meta name="author" content="Souler Ou">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="http://odbpjthkf.bkt.clouddn.com/reveal.min.css">
+		<link rel="stylesheet" href="http://odbpjthkf.bkt.clouddn.com/teal2.css" id="theme">
+		<link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="http://odbpjthkf.bkt.clouddn.com/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+<!-- 		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script> -->
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+					<h1>DeepRM+</h1>
+					<p>使用深度增强学习</p>
+					<p>提升服务器资源管理效率的研究</p>
+					<br/>
+					<p>
+						<small><a href="http://soulerou.cn">欧一锋</a></small>
+						<br/>
+						<small>14级软件工程 计算机应用方向</small>
+					</p>
+
+				</section>
+
+				<section>
+					<section>
+						<h2>服务器资源管理定义</h2>
+						<br/>
+						<p>根据服务器上到来的任务的资源(运算资源、存储资源、I/O资源、网络资源等)需求，通过一定的方法来对资源进行分配，使到来的任务能够得到完成。本质上属于<strong>调度决策类</strong>的问题。</p>
+					</section>
+
+					<section>
+						<h2>选题背景</h2>
+						<br/>
+						<ul>
+							<li>通用解法为根据工作负载设计特定的<strong>启发式函数</strong></li>
+							<li><strong>最短任务优先策略</strong>依然为已知的最佳启发式</li>
+							<li>找到全局最优解为 $NP-$难 问题</li>
+							<li>设计启发式只能靠脑洞大开</li>
+							<li><strong>深度增强学习</strong>开始变得非常流行且很有用</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>选题意义</h2>
+						<br/>
+						<p>如果能够通过一种方法，让服务器能够<strong>通过某种方法观察记录</strong>当前的工作任务负载，从而<strong>自动调节</strong>资源管理策略，达到当前相对优化的分配策略(接近或超越已知的当前任务负载下最优的分配策略)，<strong>岂不美哉</strong>？
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>当前研究现状</h2>
+					</section>
+					<section>
+						<h3>最短任务优先策略</h3>
+						<br/>
+						<p>通过审查所有任务声称的所需运行时间，从中选出所需运行时间最短的任务，并尝试满足其资源需求。</p>
+					</section>
+					<section>
+						<h3>资源包装者策略</h3>
+						<br/>
+						<p>由<i>Grandl R</i>等人提出，定义任务$j$的资源效用率$R_{rs}^j$:</p>
+						<p>$$R_{rs}^j = \sum_{i=0}^{d} \mathbf{n}_{rs}^{avbl}(i) \times \mathbf{r}_j(i) $$</p>
+						<p>选出<strong>资源效用率</strong>最高的任务，并尝试满足其资源需求。</p>
+					</section>
+
+					<section>
+						<h3>DeepRM策略</h3>
+						<br/>
+						<p>由<i>Hongzi Mao</i>等人提出，首次将深度增强学习引入资源管理。将机器任务池、任务队列和资源占用情况表示为状态。使用蒙特卡洛模拟和策略梯度方法进行学习。</p>
+					</section>
+
+					<section>
+						<h3>分级资源管理策略</h3>
+						<br/>
+						<p>由<i>Ning Liu</i>等人提出，引出一个针对于云端多机器集群的分级资源管理策略。将机器任务池、任务队列、资源占用、能源损耗等情况表示为状态，网络结构使用DNN+LSTM方式进行分级预测。</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>本文的工作</h2>
+						<ul>
+							<li><strong>Compact.</strong>对DeepRM下的状态进行不同程度的压缩，得出<strong>小图表示形式</strong>以及<strong>向量表示形式</strong>。</li>
+							<li><strong>Expand.</strong>扩展DeepRM的参数、资源、网络结构，进一步研究集群上的表现。引入<strong>多机器</strong>、<strong>多权值</strong>、<strong>卷积层</strong>，研究<strong>训练策略扩展</strong>的可能性。</li>
+							<li><strong>Variaty.</strong>引入不同优化方式，提出新目标函数并加权拓展。得出<strong>Adam</strong>和<strong>RMSProp</strong>的区别以及<strong>平均完成时间</strong>下的训练可行性。</li>
+						</ul>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>增强学习</h2>
+						<br/>
+						<p><strong>马尔科夫决策过程</strong>(<i>MDP</i>)：$<\mathcal{S},\mathcal{A},\mathcal{P},\mathcal{R}>$四元组</p>
+						<!-- <br/> -->
+						<p><strong>奖励分布函数</strong>：$r(s_t,a_t) = \mathbb{E}\{r_{t+1}|s_t=s,a_t=a\}$</p>
+						<p><strong>状态转移概率</strong>：$\pi(s,a) = Pr\{s_{t+1} | s_t=s, a_t=a\}$</p>
+						<p><strong>最终目标</strong>：尽可能最大化$R_\infty = \mathbb{E}[\sum^\infty_{t=0}\gamma^t r_t]$</p>
+					</section>
+					<section>
+						<h2>代理-环境循环</h2>
+						<img width="640" height="550" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/aeloop.png" />
+					</section>
+					<section>
+						<h2>引入DNN</h2>
+						<img width="640" height="500" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/drlp.png" />
+					</section>
+					<section>
+						<h2>策略梯度方法</h2>
+						<br/>
+						<p>定义一个网络，输入为$s$,输出为$\pi(s,a)$, 定义$\theta$为网络参数, $\rho$为策略参数的评判标准(通常为平均奖励),那么当 </p>
+						<p>$$\Delta \theta \approx \alpha \frac{\partial \rho}{\partial \theta}	$$</p>
+						<p>可以取等号，那么认为$\theta$能够收敛到局部最优策略。</p>
+					</section>
+				</section>
+
+
+				<section>
+					<section>
+						<h2>模型流程</h2>
+						<br/>
+						<img width="720" height="100" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/allproc.png" />
+					</section>
+					<section>
+						<h2>初始化：生成任务序列</h2>
+						<br />
+						<p>任务序列生成细节与DeepRM一致，对由<i>Ghodsi Ali</i>等人提出的 Big-Little-Dom-Sub 任务分布进行一定的修改而成。</p>
+
+					</section>
+					<section>
+						<h2>初始化：准备网络</h2>
+						<br/>
+						<img width="640" height="450" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/step1.png" />
+					</section>
+					<section>
+						<h2>初始化：清空机器环境</h2>
+						<br/>
+						<p>将当前机器中的所有任务、队列、资源全部清空</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>模拟过程：概述</h2>
+						<br/>
+						<p>使用初始化阶段生成的时间坐标上的任务分布，在时间点$t$处，若时间点上有任务，则将其置入任务队列中等待（队列已满后置入二级队列等待）。在每一个决策点，动作为取任务队列中的任务进行分配。这个过程中记录每个决策点的初始状态、动作、采取动作的奖励以及采取动作转移后的新状态。得到<strong>状态-动作-奖励序列</strong></p>	
+					</section>
+					<section>
+						<h2>模拟过程：状态表示</h2>
+						<img width="720" height="500" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/drmstate.png" />
+						<p>DeepRM 原表示</p>	
+					</section>
+					<section>
+						<h2>模拟过程：状态表示</h2>
+						<img width="720" height="450" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/simg.png" />
+						<p>小图表示</p>	
+					</section>
+					<section>
+						<h2>模拟过程：状态表示</h2>
+						<br/>
+						<img width="720" height="300" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/vector.png" />
+						<p>向量表示</p>	
+					</section>
+					<section>
+						<h2>模拟过程：状态表示</h2>
+						<br/>
+						<img width="720" height="380" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/drmc.png" />
+						<p>集群小图表示</p>	
+					</section>
+
+					<section>
+						<h2>模拟过程：动作空间表示</h2>
+						<br/>
+						<p>单机器动作空间：$a \in [1, len_{js}]$</p>
+						<p>集群动作空间： $a \in [1, m \times len_{js}]$</p>
+						<br/>
+						<p>其中，$len_{js}$为<strong>任务队列长度</strong>，$m$为<strong>机器数量</strong></p>
+					</section>
+
+					<section>
+						<h2>模拟过程：奖励计算函数</h2>
+						<br/>
+						<p><strong>平均时延奖励</strong> ${R}^c_{sl}(s,a) = \sum_{j_j \in J_{pc}^i} \frac{1}{T_{j_{j}}} + \sum_{j_p \in J_{pd}}\frac{1}{T_{j_{p}}} + \sum_{j_h \in J_{hd}} \frac{1}{T_{j_{h}}}$</p>
+						<p><strong>平均完成时间奖励</strong> $R_t = \alpha_{pc} \times |J_{proc}| + \alpha_{pd} \times |J_{pend}| + \alpha_{hd} \times |J_{hold}|$</p>
+						<br/>
+						<p>集群版本要对每个机器的奖励和进行求和(机器加权)</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>计算过程：衰减总奖励</h2>
+						<br/>
+						<p>$$v_t^i = \sum_{s=t}^{L_i} \gamma^{s-t} r_s^i$$</p>
+						<br/>
+						<p>其中，$i$为轨迹(集, <i>Episode</i>)序号，$t$为当前时间点, $\gamma$为衰减系数, $r_s^i$为第$i$个任务集在状态$s$下(取既定的决策动作$a$)获得的即时奖励。$L_i$为第$i$个轨迹的长度。</p>
+					</section>
+					<section>
+						<h2>计算过程：TRPO基线</h2>
+						<br/>
+						<p>$$b_t = \frac{1}{N} \sum_{i=1}^N v_t^i$$</p>
+						<br/>
+						<p>所有轨迹在$t$时刻衰减总奖励的〔<strong>均值</strong>〕</p>
+					</section>
+					<section>
+						<h2>计算过程：TRPO优势</h2>
+						<br/>
+						<p>$$A_t = v_t^i - b_t$$</p>
+						<br/>
+						<p>用$A_t$取代$v_t^i$进行策略梯度网络的求导</p>
+					</section>
+					<section>
+						<h2>计算过程：梯度更新量</h2>
+						<br/>
+						<p>$$\Delta \theta \leftarrow \Delta \theta + \alpha \nabla_\theta log \pi_\theta (s_t^i, a_t^i) \times A_t$$</p>
+						<br/>
+						<p>计算完后用来更新策略参数: $\theta = \theta + \Delta \theta$</p>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>实验结果：单机器</h2>
+						<!-- <canvas class="stretch" data-chart="bar" data-chart-src="./result/singlecomp.csv"> -->
+						<canvas class="stretch" data-chart="bar">
+						,DeepRM, DeepRM+(小图), DeepRM+(向量), 短任务, 随机, 包装者
+						参数数量, 221851, 22651, 3871, 0, 0, 0
+						训练耗时, 130, 38, 22, 0, 0, 0, 0
+						最好延时, 3.98, 4.15, 7.68, 6.23, 10.39, 11.96
+						最佳奖励, -321.51, -338.64, -582.25, -710.29, -878.32, -1282.33
+						<!-- 
+						{
+						"data" : {
+						"datasets" : [{ "backgroundColor": 'rgba(255, 99, 132, 0.8)' }, { "backgroundColor": 'rgba(54, 162, 235, 0.8)' }, { "backgroundColor": 'rgba(255, 206, 86, 0.8)' }, { "backgroundColor": 'rgba(75, 192, 192, 0.8)' }, { "backgroundColor": 'rgba(153, 102, 255, 0.8)' }, { "backgroundColor": 'rgba(255, 159, 64, 0.8)'}]
+						},
+						"options": { "responsive": true, "scales": { "xAxes": [{ "stacked": true }], "yAxes": [{ "stacked": true }] } }
+						}
+						-->
+						</canvas>
+						<p>训练效率与精度对比</p>
+					</section>
+					<section>
+						<h2>89.79%↓</h2>
+						<p>DeepRM+小图模型训练参数数量较原模型下降率</p>
+						<h2>98.26%↓</h2>
+						<p>DeepRM+向量模型训练参数数量较原模型下降率</p>
+					</section>
+					<section>
+						<h2>3.42x Speedup</h2>
+						<p>DeepRM+小图模型训练速率与原模型相比</p>
+						<h2>5.91x Speedup</h2>
+						<p>DeepRM+向量模型训练速率与原模型相比</p>
+					</section>
+					<section>
+						<h2>4.27%↓</h2>
+						<p>DeepRM+小图模型训练精度与原模型相比</p>
+						<h2>92.96%↓</h2>
+						<p>DeepRM+向量模型训练精度与原模型相比</p>
+					</section>
+					<section>
+						<h2>小图模型：优化</h2>
+						<canvas class="stretch" data-chart="bar">
+						,DeepRM, DeepRM+(原优化), DeepRM+(Adam), DeepRM+(CNN), 短任务, 随机, 包装者
+						参数数量, 221851, 22651, 22651, 184011, 0, 0, 0
+						训练耗时, 130, 38, 56, 275 ,0, 0, 0, 0
+						最好延时, 3.98, 4.15, 4.13, 3.84 ,6.23, 10.39, 11.96
+						最佳奖励, -321.51, -338.64, -333.68, -312.25, -710.29, -878.32, -1282.33
+						<!-- 
+						{
+						"data" : {
+						"datasets" : [{ "backgroundColor": 'rgba(255, 99, 132, 0.8)' }, { "backgroundColor": 'rgba(54, 162, 235, 0.8)' }, { "backgroundColor": 'rgba(255, 206, 86, 0.8)' }, { "backgroundColor": 'rgba(75, 192, 192, 0.8)' }, { "backgroundColor": 'rgba(153, 102, 255, 0.8)' }, { "backgroundColor": 'rgba(255, 159, 64, 0.8)'}]
+						},
+						"options": { "responsive": true, "scales": { "xAxes": [{ "stacked": true }], "yAxes": [{ "stacked": true }] } }
+						}
+						-->
+						</canvas>
+						<p>训练效率与精度对比</p>
+					</section>
+
+					<section>
+						<h2>0.5%↓</h2>
+						<p>DeepRM+(Adam)最好延时与基本小图模型相比</p>
+						<h2>7.47%↓</h2>
+						<p>DeepRM+(CNN)最好延时与基本小图模型相比</p>
+					</section>
+					<section>
+						<h2>3.77%↑</h2>
+						<p>DeepRM+(Adam)最好延时与原始模型相比</p>
+						<h2>3.52%↓</h2>
+						<p>DeepRM+(CNN)最好延时与原始模型相比</p>
+					</section>
+					<section>
+						<h2>1.47x Slower</h2>
+						<p>DeepRM+(Adam)训练速率与小图模型相比</p>
+						<h2>7.24x Slower</h2>
+						<p>DeepRM+(CNN)训练速率与小图模型相比</p>
+					</section>
+
+					<section>
+						<h2>小图模型：鲁棒性测试</h2>
+						<canvas class="stretch" data-chart="line">
+						DeepRM+,1.186,1.553,2.490,3.432,4.536,6.973,10.008,12.020,13.497,14.710
+						随机,3.756,4.714,5.872,7.302,9.360,11.702,13.555,14.898,15.957,17.052
+						短任务,1.099,1.670,2.508,3.597,5.728,8.201,10.261,11.675,13.036,14.16
+						包装者,1.142,2.375,4.711,7.514,10.413,12.722,14.596,16.086,16.872,17.916
+						<!-- 
+						{ 
+						"data" : {
+							"labels" : ["10%","30%","50%","70%","90%","110%","130%","150%","170%","190%"],
+							"datasets" : [{ "borderColor": "rgba(255, 99, 132, 0.8)" }, { "borderColor": "rgba(54, 162, 235, 0.8)" }, { "borderColor": "rgba(153, 102, 255, 0.8)" }, { "borderColor": "rgba(255, 159, 64, 0.8)"}]
+							},
+						"options": {
+							"scales": {
+								"xAxes": [{"display": "true", "scaleLabel": {"display": "true", "labelString": "工作负载"}}],
+								"yAxes": [{"display": "true", "scaleLabel": {"display": "true", "labelString": "平均任务时延"}}]
+								}
+							}
+						}
+						-->
+						</canvas>
+						<p>不同工作负载下测试时延对比</p>
+					</section>
+				</section>
+
+
+				<section>
+					<section>
+					<h2>实验结果：集群</h2>
+					<canvas data-chart="bar" class="stretch">
+						,DeepRM+, DeepRM+(Adam), DeepRM+(CNN), 短任务, 随机, 包装者
+						参数数量, 52185, 52185, 383141, 0, 0, 0
+						训练耗时, 42, 58, 240, 0, 0, 0, 0
+						最好延时, 1.89, 1.96, 1.62, 1.98, 6.83, 4.11
+						最佳奖励, -272.56, -279.33, -242.25, -382.31, -957.09, -791.58
+						<!-- 
+						{
+						"data" : {
+						"datasets" : [{ "backgroundColor": 'rgba(255, 99, 132, 0.8)' }, { "backgroundColor": 'rgba(54, 162, 235, 0.8)' }, { "backgroundColor": 'rgba(255, 206, 86, 0.8)' }, { "backgroundColor": 'rgba(75, 192, 192, 0.8)' }, { "backgroundColor": 'rgba(153, 102, 255, 0.8)' }, { "backgroundColor": 'rgba(255, 159, 64, 0.8)'}]
+						},
+						"options": { "responsive": true, "scales": { "xAxes": [{ "stacked": true }], "yAxes": [{ "stacked": true }] } }
+						}
+						-->
+						</canvas>
+						<p>训练效率与精度对比</p>
+					</section>
+					<section>
+						<h2>4.55%↓</h2>
+						<p>DeepRM+原模型最好延时与短任务优先策略相比</p>
+						<h2>28.71%↑</h2>
+						<p>DeepRM+原模型最佳奖励与短任务优先策略相比</p>
+					</section>
+					<section>
+						<h2>14.29%↓</h2>
+						<p>DeepRM+(CNN)最好延时与DeepRM+原模型相比</p>
+						<h2>18.19%↓</h2>
+						<p>DeepRM+(CNN)最好延时与短任务优先策略相比</p>
+					</section>
+					<section>
+						<h2>5.71x Slower</h2>
+						<p>DeepRM+(CNN)训练速度与DeepRM+原模型相比</p>
+					</section>
+
+					<section>
+						<h2>集群模型：鲁棒性测试</h2>
+						<canvas class="stretch" data-chart="line">
+						DeepRM+,1.02,1.02,1.03,1.04,1.18,1.49,2.07,3.05,4.27,5.77
+						随机,3.36,3.41,3.87,4.37,4.91,5.75,7.24,8.45,9.51,10.59
+						短任务,1.0,1.0,1.02,1.05,1.22,1.65,2.31,3.40,4.54,5.57
+						包装者,1.0,1.01,1.06,1.42,2.19,3.40,5.08,6.73,7.69,9.05
+							<!-- 
+						{ 
+						"data" : {
+							"labels" : ["10%","30%","50%","70%","90%","110%","130%","150%","170%","190%"],
+							"datasets" : [{ "borderColor": "rgba(255, 99, 132, 0.8)" }, { "borderColor": "rgba(54, 162, 235, 0.8)" }, { "borderColor": "rgba(153, 102, 255, 0.8)" }, { "borderColor": "rgba(255, 159, 64, 0.8)"}]
+							},
+						"options": {
+							"scales": {
+								"xAxes": [{"display": "true", "scaleLabel": {"display": "true", "labelString": "工作负载"}}],
+								"yAxes": [{"display": "true", "scaleLabel": {"display": "true", "labelString": "平均任务时延"}}]
+								}
+							}
+						}
+						-->
+						</canvas>
+						<p>不同工作负载下<strong>训练后</strong>测试时延对比</p>
+					</section>
+				</section>
+
+
+				<section>
+					<section>
+						<img width="720" height="600" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/single.png" />
+						<p>DeepRM+单机器典型测试结果</p>	
+					</section>
+					<section>
+						<img width="720" height="600" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/cluster1.png" />
+						<p>DeepRM+集群典型测试结果</p>	
+					</section>
+					<section>
+						<img width="720" height="600" class="plain" data-src="http://odbpjthkf.bkt.clouddn.com/cluster2.png" />
+						<p>DeepRM+集群非典型测试结果</p>	
+					</section>
+				</section>
+
+				<section>
+					<h2>总结</h2>
+					<br/>
+					<ul>
+						<li>提出小图模型，大大减少模型的时空复杂度。并通过修改优化方式、网络结构、目标函数等方法提升其准确度和收敛速率。</li>
+						<li>扩展到多机器模型，通过鲁棒性测试证明模型在多负载多机器的环境下依然有效。</li>
+						<li>进行大量对比实验与结果分析，证明模型的有效性。</li>
+					</ul>
+				</section>
+
+				<section>
+					<h2>展望</h2>
+					<br/>
+					<ul>
+						<li>研究更全面的任务模型</li>
+						<li>研究更具有普适性的集群问题</li>
+						<li>研究无限时间片的资源管理效果</li>
+						<li>考虑任务分布带来的影响</li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>Q &amp; A</h1>
+				</section>
+
+
+			</div>
+
+		</div>
+
+		<script src="http://odbpjthkf.bkt.clouddn.com/head.min.js"></script>
+		<script src="http://odbpjthkf.bkt.clouddn.com/reveal.min.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'zoom', // none/fade/slide/convex/concave/zoom
+
+				chalkboard: { 
+					// optionally load pre-recorded chalkboard drawing from file
+					src: null,
+					theme: "chalkboard",
+					// configuration options for notes canvas and chalkboard
+					color: [ 'rgba(0,0,0,0.6)', 'rgba(255,255,255,0.5)' ]
+				},
+				chart: {
+					defaults: { 
+						global: { 
+							title: { fontColor: "#7F7F7F" }, 
+							legend: {
+								labels: { fontColor: "#7F7F7F" },
+							},
+						},
+						scale: { 
+							scaleLabel: { fontColor: "#7F7F7F" }, 
+							gridLines: { color: "#7F7F7F", zeroLineColor: "#7F7F7F" }, 
+							ticks: { fontColor: "#7F7F7F" }, 
+						} 
+					},
+					line: { borderColor: [ "rgba(20,220,220,.8)" , "rgba(220,120,120,.8)", "rgba(20,120,220,.8)" ], backgroundColor: ["rgba(255,255,255,0)"]}, 
+					bar: { backgroundColor: [ 'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)' ]}, 
+					pie: { backgroundColor: [ ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)'] ]},
+					radar: { borderColor: [ "rgba(20,220,220,.8)" , "rgba(220,120,120,.8)", "rgba(20,120,220,.8)" ]},
+					doughnut: { backgroundColor: [ ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)'] ]}
+				},
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'http://odbpjthkf.bkt.clouddn.com/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/chalkboard/chalkboard.js' },
+					{ src: 'plugin/chart/Chart.min.js' },				
+					{ src: 'plugin/chart/csv2chart.js' },
+					{ src: 'plugin/math/math.js' },
+					{ src: 'plugin/menu/menu.js' },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				],
+				keyboard: {
+				    67: function() { RevealChalkboard.toggleNotesCanvas() },	// toggle notes canvas when 'c' is pressed
+				    66: function() { RevealChalkboard.toggleChalkboard() },	// toggle chalkboard when 'b' is pressed
+				    46: function() { RevealChalkboard.clear() },	// clear chalkboard when 'DEL' is pressed
+				     8: function() { RevealChalkboard.reset() },	// reset chalkboard data on current slide when 'BACKSPACE' is pressed
+				    68: function() { RevealChalkboard.download() },	// downlad recorded chalkboard drawing when 'd' is pressed
+				}
+			});
+
+		</script>
+
+	</body>
+</html>
